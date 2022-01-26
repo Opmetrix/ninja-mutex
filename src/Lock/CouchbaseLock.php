@@ -114,6 +114,9 @@ class CouchbaseLock extends LockAbstract implements LockExpirationInterface
         } catch (\Couchbase\DocumentNotFoundException $e) {
             $result = true;
         }
+        
+        // Release the lock in the parent (abstract) class.
+        if ($result) unset($this->locks[$name]);
 
         return $result ? true : false;
     }
@@ -132,7 +135,7 @@ class CouchbaseLock extends LockAbstract implements LockExpirationInterface
             $res = $this->collection->get($key);
             $result = $res->content();
 
-        } catch (Couchbase\DocumentNotFoundException $e) {
+        } catch (\Couchbase\DocumentNotFoundException $e) {
             return false;
         }
 
